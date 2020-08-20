@@ -3,27 +3,26 @@ class Piece {
     color;
     ctx;
     xPos = 3;
-    yPos = 0;
-    xOff = 0;
-    yOff = -2;
-    constructor(ctx, shapeType){
+    yPos = 5;
+    offset;
+    constructor(ctx, shapeType) {
         this.ctx = ctx;
-        this.shape = P_SHAPE[shapeType];
-        this.color = P_COLOR[shapeType];
+        this.shape = SHAPES[shapeType];
+        this.color = COLORS[shapeType];
+        this.offset = (shapeType === TYPES.I) || (shapeType === TYPES.O) ? 4 : 3;
     }
 
     draw() {
-        for(let i = 0; i < this.shape.length; i++) {
-            if(this.shape[i] > 0) {
-                drawBlock(this.ctx, this.color, 
-                    this.xPos + (i % 5) + this.xOff,
-                    this.yPos + parseInt(i / 5) + this.yOff
-                );
+        this.shape.forEach((item, index) => {
+            if (item > 0) {
+                drawBlock(this.ctx, this.color,
+                    this.xPos + (index % this.offset),
+                    this.yPos + parseInt(index / this.offset));
             }
-        }
+        });
     }
 
-    rotate() {
-        
+    down() {
+        this.yPos += 1;
     }
 }
