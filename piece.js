@@ -1,12 +1,10 @@
 class Piece {
     shape;
-    color;
     ctx;
     xPos = 0;
     yPos = 0;
     constructor(ctx, shape) {
         this.shape = SHAPES[shape];
-        this.color = COLORS[shape];
         this.ctx = ctx;
     }
 
@@ -23,10 +21,10 @@ class Piece {
         this.shape.forEach((row, j) => {
             row.forEach((cell, i) => {
                 if (cell > 0) {
-                    drawBlock(this.ctx, this.color,
+                    drawBlock(this.ctx, COLORS[cell - 1],
                         this.xPos + i,
                         this.yPos + j
-                        );
+                    );
                 }
             });
         });
