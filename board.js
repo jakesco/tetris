@@ -7,6 +7,8 @@ class Board {
     piece;
     nextPiece;
     heldPiece;
+    lines;
+    paused = false;
     constructor(ctxBoard, ctxNext, ctxHeld) {
         this.ctxBoard = ctxBoard;
         this.ctxNext = ctxNext;
@@ -17,17 +19,7 @@ class Board {
         this.piece.adjust();
         this.nextPiece = new Piece(ctxNext, this.upcomming.pop());
         this.heldPiece = null;
-        this.init();
-    }
-
-    init() {
-        // set board sizes
-        this.ctxBoard.canvas.width = COLS * BLOCK_SIZE;
-        this.ctxBoard.canvas.height = ROWS * BLOCK_SIZE;
-        this.ctxNext.canvas.width = 4 * BLOCK_SIZE;
-        this.ctxNext.canvas.height = 4 * BLOCK_SIZE;
-        this.ctxHeld.canvas.width = 4 * BLOCK_SIZE;
-        this.ctxHeld.canvas.height = 4 * BLOCK_SIZE;
+        this.lines = 0;
     }
 
     draw() {
@@ -111,22 +103,28 @@ class Board {
         for (let j = 0; j < this.piece.shape.length; j++) {
             for (let i = 0; i < this.piece.shape[j].length; i++) {
                 cell = this.piece.shape[j][i];
-                if (cell > 0)
+                if (cell > 0 && this.board[y + j] && this.board[x + i])
                     this.board[y + j][x + i] = cell;
             }
         }
 
         this.piece = this.nextPiece;
         this.piece.changeCtx(ctxBoard);
+        this.piece.adjust();
         if (this.upcomming.length === 0)
             this.upcomming = pickRandom();
         this.nextPiece = new Piece(ctxNext, this.upcomming.pop());
+        if(!this.validMove(this.piece)) {
+            this.paused = true;
+        }
     }
 
     clearLines() {
         this.board.forEach((row, i) => {
-            if (row.every(x => x >= 1))
+            if (row.every(x => x >= 1)) {
                 this.removeLine(i);
+                this.lines++;
+            }
             console.log("line");
         });
     }
@@ -139,6 +137,10 @@ class Board {
 
     emptyGrid() {
         return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    }
+
+    gameOverGrid() {
+        return Array.from({ length: ROWS }, () => Array(COLS).fill(1));
     }
 
     insideWalls(x) {

@@ -13,7 +13,7 @@ const KEY = {
     DOWN: 40,
     P: 80
 }
-//Object.freeze(KEY);
+Object.freeze(KEY);
 
 const TYPES = {
     I: 0,
@@ -24,6 +24,7 @@ const TYPES = {
     Z: 5,
     T: 6
 }
+Object.freeze(TYPES);
 
 const COLORS = [
     'blue',
@@ -32,7 +33,7 @@ const COLORS = [
     'yellow',
     'green',
     'red',
-    'magenta'
+    'purple'
 ]
 
 const SHAPES = [
