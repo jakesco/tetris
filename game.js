@@ -9,14 +9,19 @@ class Board {
     heldPiece;
     lines;
     paused = false;
+    canSwap = true;
     constructor(ctxBoard, ctxNext, ctxHeld) {
         this.ctxBoard = ctxBoard;
         this.ctxNext = ctxNext;
         this.ctxHeld = ctxHeld;
+        this.reset();
+    }
+
+    reset() {
         this.board = this.emptyGrid();
         this.upcomming = pickRandom();
         this.piece = new Piece(ctxBoard, this.upcomming.pop());
-        this.piece.adjust();
+        this.piece.setStartPosition();
         this.nextPiece = new Piece(ctxNext, this.upcomming.pop());
         this.heldPiece = null;
         this.lines = 0;
@@ -26,6 +31,8 @@ class Board {
         this.drawBoard();
         this.piece.draw();
         this.nextPiece.draw();
+        if (this.heldPiece != null)
+            this.heldPiece.draw();
     }
 
     drawBoard() {
@@ -96,6 +103,35 @@ class Board {
             this.piece.shape = p.shape;
     }
 
+    hold() {
+        if (this.canSwap) {
+            if (this.heldPiece != null) {
+                let tmp = this.piece;
+                this.piece = this.heldPiece;
+                this.heldPiece = tmp;
+                this.piece.changeCtx(this.ctxBoard);
+                this.piece.setStartPosition();
+                this.heldPiece.changeCtx(this.ctxHeld)
+                this.heldPiece.setDisplayPosition();
+            } else {
+                this.heldPiece = this.piece;
+                this.heldPiece.changeCtx(this.ctxHeld);
+                this.heldPiece.setDisplayPosition();
+                this.getNextPiece();
+            }
+            this.canSwap = false;
+        }
+    }
+
+    getNextPiece() {
+        this.piece = this.nextPiece;
+        this.piece.changeCtx(ctxBoard);
+        this.piece.setStartPosition();
+        if (this.upcomming.length === 0)
+            this.upcomming = pickRandom();
+        this.nextPiece = new Piece(ctxNext, this.upcomming.pop());
+    }
+
     freeze() {
         let x = this.piece.xPos;
         let y = this.piece.yPos;
@@ -107,14 +143,9 @@ class Board {
                     this.board[y + j][x + i] = cell;
             }
         }
-
-        this.piece = this.nextPiece;
-        this.piece.changeCtx(ctxBoard);
-        this.piece.adjust();
-        if (this.upcomming.length === 0)
-            this.upcomming = pickRandom();
-        this.nextPiece = new Piece(ctxNext, this.upcomming.pop());
-        if(!this.validMove(this.piece)) {
+        this.canSwap = true;
+        this.getNextPiece();
+        if (!this.validMove(this.piece)) {
             this.paused = true;
         }
     }
@@ -125,7 +156,6 @@ class Board {
                 this.removeLine(i);
                 this.lines++;
             }
-            console.log("line");
         });
     }
 
