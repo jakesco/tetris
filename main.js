@@ -4,12 +4,13 @@ var ctxNext = document.getElementById('next').getContext('2d');
 var ctxHeld = document.getElementById('held').getContext('2d');
 
 let b, time;
+b = new Board(ctxBoard, ctxNext, ctxHeld);
+addEventListener();
 init();
 
 function play() {
     time = { start: 0, elapsed: 0, level: 1000 };
     b = new Board(ctxBoard, ctxNext, ctxHeld);
-    addEventListener();
     requestAnimationFrame(animate);
 }
 
